@@ -95,5 +95,61 @@
       }
     }
   </script>
+  <!-- Bonus Arena funksiyalari -->
+<div id="game-panel">
+  <h2>🪙 Tanga yig‘ish</h2>
+  <h1>🪙 <span id="coins">0</span></h1>
+
+  <button onclick="tapCoin()">👆 TAP QILISH</button>
+  <button onclick="dailyBonus()">🎁 Kunlik bonus</button>
+
+  <h3>🎯 Vazifalar</h3>
+  <button onclick="doTask()">📋 Vazifani bajarish (+100)</button>
+
+  <h3>👥 Do‘st taklif qilish</h3>
+  <button onclick="inviteFriend()">🔗 Taklif havolasini olish</button>
+</div>
+
+<script>
+let coins = Number(localStorage.getItem("bonusCoins") || 0);
+
+function updateCoins() {
+  document.getElementById("coins").textContent = coins;
+  localStorage.setItem("bonusCoins", coins);
+}
+
+function tapCoin() {
+  coins += 1;
+  updateCoins();
+}
+
+function dailyBonus() {
+  const today = new Date().toDateString();
+  if (localStorage.getItem("bonusDaily") === today) {
+    alert("Bugungi bonusni olding!");
+    return;
+  }
+  coins += 50;
+  localStorage.setItem("bonusDaily", today);
+  updateCoins();
+  alert("50 ta tanga olding!");
+}
+
+function doTask() {
+  alert("Vazifani haqiqatan bajarganingdan keyin mukofot berilishi kerak. Hozircha bu demo.");
+}
+
+function inviteFriend() {
+  const link = window.location.href;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link);
+    alert("Sayt havolasi nusxalandi. Haqiqiy referal hisobi keyin ulanadi.");
+  } else {
+    prompt("Havolang:", link);
+  }
+}
+
+updateCoins();
+</script>
 </body>
 </html>

@@ -51,14 +51,6 @@
   </div>
 
   <div class="card">
-    <h3>📋 Vazifalar</h3>
-    <p>Yangi vazifalar tez orada qo‘shiladi.</p>
-    <button onclick="showMessage('Vazifalar hali sozlanmagan.')">
-      Vazifalarni ko‘rish
-    </button>
-  </div>
-
-  <div class="card">
     <h3>👥 Do‘st taklif qilish</h3>
     <p>Do‘stlaringni taklif qilib bonus yig‘.</p>
     <button onclick="invite()">Taklif havolasini ulashish</button>
@@ -101,6 +93,10 @@
   <h1>🪙 <span id="coins">0</span></h1>
 
   <button onclick="tapCoin()">👆 TAP QILISH</button>
+  
+<p>📊 Kunlik TAP limiti: <span id="limitDisplay">500</span></p>
+<p>👆 Bugun ishlatilgan: <span id="tapUsed">0</span></p>
+  
   <button onclick="upgradeLimit()">🚀 Limitni oshirish (1000 🪙)</button>
   <button onclick="dailyBonus()">🎁 Kunlik bonus</button>
 
@@ -120,11 +116,15 @@ let dailyTapCount = Number(
 let upgrades = Number(localStorage.getItem("limitUpgrades") || 0);
 let dailyLimit = 500 + upgrades * 100;
 
+
 function updateCoins() {
   document.getElementById("coins").textContent = coins;
+  document.getElementById("balance").textContent = coins;
   localStorage.setItem("bonusCoins", coins);
-}
 
+  document.getElementById("limitDisplay").textContent = dailyLimit;
+  document.getElementById("tapUsed").textContent = dailyTapCount;
+}
 
 function tapCoin() {
   if (dailyTapCount >= dailyLimit) {
@@ -182,106 +182,8 @@ function inviteFriend() {
 }
 
 updateCoins();
-</script>
-  
-<div id="extraTasks" style="background:#20234b;color:white;padding:18px;border-radius:18px;margin:20px auto;max-width:440px;font-family:Arial">
-  <h2>🎯 Vazifalar</h2>
-  <p>Uchala vazifani bajarsang, kunlik TAP limiting +100 oshadi!</p>
-
-  <button id="taskChannel" style="display:block;width:100%;padding:13px;margin:8px 0;border-radius:12px">
-    📢 Kanalga obuna
-  </button>
-  <button id="taskDaily" style="display:block;width:100%;padding:13px;margin:8px 0;border-radius:12px">
-    🎁 Kunlik vazifa
-  </button>
-  <button id="taskFriend" style="display:block;width:100%;padding:13px;margin:8px 0;border-radius:12px">
-    👥 Do‘st taklif qilish
-  </button>
-
-  <p id="taskStatus">Bajarildi: 0/3</p>
-  <p id="taskLimit">Kunlik TAP limiti: 500</p>
-</div>
-
-<script>
-(function () {
-  const today = new Date().toISOString().slice(0, 10);
-  const prefix = "arenaTasks_v2_" + today + "_";
-  const names = ["channel", "daily", "friend"];
-
-  function doneCount() {
-    return names.filter(n => localStorage.getItem(prefix + n) === "1").length;
-  }
-
-  function renderTasks() {
-    names.forEach(n => {
-      const btn = document.getElementById(
-        n === "channel" ? "taskChannel" :
-        n === "daily" ? "taskDaily" : "taskFriend"
-      );
-      const done = localStorage.getItem(prefix + n) === "1";
-      btn.textContent = (done ? "✅ " : "") + ({
-        channel: "📢 Kanalga obuna",
-        daily: "🎁 Kunlik vazifa",
-        friend: "👥 Do‘st taklif qilish"
-      }[n]);
-      btn.disabled = done;
-    });
-
-    const count = doneCount();
-    document.getElementById("taskStatus").textContent =
-      "Bajarildi: " + count + "/3";
-    document.getElementById("taskLimit").textContent =
-      "Kunlik TAP limiti: " + (count === 3 ? 600 : 500);
-  }
-
-  function completeTask(n, message) {
-    if (localStorage.getItem(prefix + n) === "1") return;
-    if (!confirm(message)) return;
-    localStorage.setItem(prefix + n, "1");
-    renderTasks();
-  }
-
-  document.getElementById("taskChannel").onclick = async () => {
-  const tg = window.Telegram.WebApp;
-
-  if (!tg.initData) {
-    alert("Bot ichidagi Bonus Arena orqali kir!");
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      "https://delicate-queen-8966.dilshodxudoyqulov005.workers.dev/check-subscription",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ initData: tg.initData })
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.ok && data.subscribed) {
-      localStorage.setItem(prefix + "channel", "1");
-      renderTasks();
-      alert("✅ Obuna tasdiqlandi!");
-    } else if (data.ok && !data.subscribed) {
-      tg.openTelegramLink("https://t.me/dilshod_ai_yordamchi");
-      alert("Kanalga obuna bo‘l, keyin qaytib tekshir.");
-    } else {
-      alert(data.error || "Tekshirish amalga oshmadi.");
-    }
-  } catch (error) {
-    alert("Serverga ulanishda xato. Keyinroq urinib ko‘r.");
-  }
-};
-  document.getElementById("taskDaily").onclick = () =>
-    completeTask("daily", "Kunlik vazifani bajardingmi?");
-  document.getElementById("taskFriend").onclick = () =>
-    completeTask("friend", "Do‘stingni taklif qildingmi?");
-
-  renderTasks();
-})();
+  document.getElementById("limitDisplay").textContent = dailyLimit;
+document.getElementById("tapUsed").textContent = dailyTapCount;
 </script>
 </body>
 </html>

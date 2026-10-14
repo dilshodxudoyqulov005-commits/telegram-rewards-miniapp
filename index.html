@@ -84,7 +84,7 @@
     }
 
     function invite() {
-      const botUsername = "BOT_USERNAME";
+      const botUsername = "dilshod_ai_yordamchi_bot";
       const link = "https://t.me/" + botUsername + "?start=ref";
       if (tg.openTelegramLink) {
         tg.openTelegramLink("https://t.me/share/url?url=" +
@@ -217,8 +217,40 @@ updateCoins();
     renderTasks();
   }
 
-  document.getElementById("taskChannel").onclick = () =>
-    completeTask("channel", "Kanalga haqiqatan obuna bo‘ldingmi?");
+  document.getElementById("taskChannel").onclick = async () => {
+  const tg = window.Telegram.WebApp;
+
+  if (!tg.initData) {
+    alert("Bot ichidagi Bonus Arena orqali kir!");
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "https://delicate-queen-8966.dilshodxudoyqulov005.workers.dev/check-subscription",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ initData: tg.initData })
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.ok && data.subscribed) {
+      localStorage.setItem(prefix + "channel", "1");
+      renderTasks();
+      alert("✅ Obuna tasdiqlandi!");
+    } else if (data.ok && !data.subscribed) {
+      tg.openTelegramLink("https://t.me/dilshod_ai_yordamchi");
+      alert("Kanalga obuna bo‘l, keyin qaytib tekshir.");
+    } else {
+      alert(data.error || "Tekshirish amalga oshmadi.");
+    }
+  } catch (error) {
+    alert("Serverga ulanishda xato. Keyinroq urinib ko‘r.");
+  }
+};
   document.getElementById("taskDaily").onclick = () =>
     completeTask("daily", "Kunlik vazifani bajardingmi?");
   document.getElementById("taskFriend").onclick = () =>

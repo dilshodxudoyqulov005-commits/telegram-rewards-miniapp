@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bonus Arena</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #101827;
+      color: white;
+    }
+    .card {
+      background: #1d2a40;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    h1 { color: #65e6a5; }
+    .balance { font-size: 34px; font-weight: bold; }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: #65e6a5;
+      color: #101827;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .secondary { background: #34445f; color: white; }
+    p { color: #c7d2e2; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎮 Bonus Arena</h1>
+    <p>Vazifalarni bajar, do‘stlaringni taklif qil!</p>
+  </div>
+
+  <div class="card">
+    <p>🪙 Sening balansing</p>
+    <div class="balance" id="balance">0</div>
+    <p>Bonus tangalari</p>
+  </div>
+
+  <div class="card">
+    <h3>📋 Vazifalar</h3>
+    <p>Yangi vazifalar tez orada qo‘shiladi.</p>
+    <button onclick="showMessage('Vazifalar hali sozlanmagan.')">
+      Vazifalarni ko‘rish
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>👥 Do‘st taklif qilish</h3>
+    <p>Do‘stlaringni taklif qilib bonus yig‘.</p>
+    <button onclick="invite()">Taklif havolasini ulashish</button>
+  </div>
+
+  <div class="card">
+    <h3>🎁 Mukofotlar</h3>
+    <p>Yig‘ish muddati: 6 oy.</p>
+    <p>Tanlov: pul yoki PUBG Mobile UC.</p>
+    <button class="secondary" onclick="showMessage('Mukofot so‘rovlari keyingi bosqichda ulanadi.')">
+      Mukofotlar
+    </button>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    function showMessage(message) {
+      if (tg.showAlert) tg.showAlert(message);
+      else alert(message);
+    }
+
+    function invite() {
+      const botUsername = "BOT_USERNAME";
+      const link = "https://t.me/" + botUsername + "?start=ref";
+      if (tg.openTelegramLink) {
+        tg.openTelegramLink("https://t.me/share/url?url=" +
+          encodeURIComponent(link) + "&text=" +
+          encodeURIComponent("Bonus Arena'ga qo‘shil!"));
+      } else {
+        showMessage("Bot username sozlangandan keyin taklif havolasi ishlaydi.");
+      }
+    }
+  </script>
+</body>
+</html>

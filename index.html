@@ -2,188 +2,190 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bonus Arena</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #101827;
-      color: white;
-    }
-    .card {
-      background: #1d2a40;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 16px;
-      text-align: center;
-    }
-    h1 { color: #65e6a5; }
-    .balance { font-size: 34px; font-weight: bold; }
-    button {
-      width: 100%;
-      padding: 14px;
-      border: 0;
-      border-radius: 12px;
-      background: #65e6a5;
-      color: #101827;
-      font-size: 16px;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    .secondary { background: #34445f; color: white; }
-    p { color: #c7d2e2; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bonus Arena</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;padding:20px 16px 30px;
+ background:radial-gradient(circle at top,#233653,#0b1220 65%);
+ color:white;font-family:Arial,sans-serif;text-align:center;
+ min-height:100vh
+}
+h1{font-size:25px;color:#65e6a5;margin:8px 0 22px}
+.card{background:#1b2940;border:1px solid #34445f;border-radius:20px;padding:16px;margin-bottom:18px}
+.label{font-size:13px;color:#bdcce0;letter-spacing:1px}
+.balance{font-size:34px;font-weight:bold;margin:8px}
+.coin{
+ width:190px;height:190px;border-radius:50%;
+ margin:24px auto 14px;
+ border:8px solid #ffe18a;
+ background:radial-gradient(circle at 35% 25%,#fff0a6,#f2bc35 42%,#a96512 78%,#ffda66);
+ box-shadow:0 0 0 5px #82521c,0 0 28px #eeb63888,inset 0 0 0 4px #ffedab;
+ color:#70400a;font-size:36px;font-weight:900;
+ display:flex;align-items:center;justify-content:center;
+ flex-direction:column;cursor:pointer;user-select:none;
+ transition:transform .12s
+}
+.coin:active{transform:scale(.92)}
+.coin.pulse{animation:pulse .35s ease}
+@keyframes pulse{
+ 0%{transform:scale(1)}
+ 40%{transform:scale(1.09) rotate(-3deg);filter:brightness(1.3)}
+ 100%{transform:scale(1);filter:brightness(1)}
+}
+#floatText{
+ position:fixed;left:50%;top:42%;transform:translateX(-50%);
+ color:#ffe18a;font-size:27px;font-weight:bold;
+ pointer-events:none;opacity:0;z-index:10
+}
+#floatText.show{animation:floatUp .75s ease-out}
+@keyframes floatUp{
+ 0%{opacity:1;transform:translate(-50%,0) scale(.7)}
+ 100%{opacity:0;transform:translate(-50%,-90px) scale(1.2)}
+}
+.limit{font-size:21px;font-weight:bold;margin:8px}
+.track{height:9px;background:#34445f;border-radius:10px;overflow:hidden;margin-top:12px}
+#progress{height:100%;width:0;background:#65e6a5;transition:width .2s}
+button{
+ border:0;border-radius:13px;padding:13px 8px;
+ background:#65e6a5;color:#101827;font-size:14px;
+ font-weight:bold;cursor:pointer
+}
+.mainBtn{width:100%;font-size:16px;margin-top:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.grid button{min-height:76px;background:#253650;color:white;border:1px solid #3b506d}
+.grid span{display:block;font-size:23px;margin-bottom:7px}
+.small{font-size:12px;color:#bdcce0}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>🎮 Bonus Arena</h1>
-    <p>Vazifalarni bajar, do‘stlaringni taklif qil!</p>
-  </div>
 
-  <div class="card">
-    <p>🪙 Sening balansing</p>
-    <div class="balance" id="balance">0</div>
-    <p>Bonus tangalari</p>
-  </div>
+<h1>🟢 BONUS ARENA</h1>
 
-  <div class="card">
-    <h3>👥 Do‘st taklif qilish</h3>
-    <p>Do‘stlaringni taklif qilib bonus yig‘.</p>
-    <button onclick="invite()">Taklif havolasini ulashish</button>
-  </div>
+<div class="card">
+ <div class="label">SENING BALANSING</div>
+ <div class="balance"><span id="balance">0</span> 🪙</div>
+ <div class="small">Yig‘ilgan tangalar</div>
+</div>
 
-  <div class="card">
-    <h3>🎁 Mukofotlar</h3>
-    <p>Yig‘ish muddati: 6 oy.</p>
-    <p>Tanlov: pul yoki PUBG Mobile UC.</p>
-    <button class="secondary" onclick="showMessage('Mukofot so‘rovlari keyingi bosqichda ulanadi.')">
-      Mukofotlar
-    </button>
-  </div>
+<div id="floatText">+1 🪙</div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
+<div id="coin" class="coin" role="button" tabindex="0" aria-label="Tanga bosish">
+ <span>★</span>
+ <span style="font-size:25px;margin-top:6px">TAP</span>
+</div>
+<div class="small">Tangani bosib tanga yig‘!</div>
 
-    function showMessage(message) {
-      if (tg.showAlert) tg.showAlert(message);
-      else alert(message);
-    }
+<div class="card" style="margin-top:22px">
+ <div class="label">📊 KUNLIK TAP LIMITI</div>
+ <div class="limit"><span id="tapUsed">0</span> / <span id="limitDisplay">500</span></div>
+ <div class="track"><div id="progress"></div></div>
+ <button class="mainBtn" onclick="upgradeLimit()">🚀 LIMITNI OSHIRISH — 1000 🪙</button>
+ <div class="small" style="margin-top:9px">Har 1000 tanga evaziga +100 TAP</div>
+</div>
 
-    function invite() {
-      const botUsername = "dilshod_ai_yordamchi_bot";
-      const link = "https://t.me/" + botUsername + "?start=ref";
-      if (tg.openTelegramLink) {
-        tg.openTelegramLink("https://t.me/share/url?url=" +
-          encodeURIComponent(link) + "&text=" +
-          encodeURIComponent("Bonus Arena'ga qo‘shil!"));
-      } else {
-        showMessage("Bot username sozlangandan keyin taklif havolasi ishlaydi.");
-      }
-    }
-  </script>
-  <!-- Bonus Arena funksiyalari -->
-<div id="game-panel">
-  <h2>🪙 Tanga yig‘ish</h2>
-  <h1>🪙 <span id="coins">0</span></h1>
-
-  <button onclick="tapCoin()">👆 TAP QILISH</button>
-  
-<p>📊 Kunlik TAP limiti: <span id="limitDisplay">500</span></p>
-<p>👆 Bugun ishlatilgan: <span id="tapUsed">0</span></p>
-  
-  <button onclick="upgradeLimit()">🚀 Limitni oshirish (1000 🪙)</button>
-  <button onclick="dailyBonus()">🎁 Kunlik bonus</button>
-
-  <h3>🎯 Vazifalar</h3>
-  <button onclick="doTask()">📋 Vazifani bajarish (+100)</button>
-
-  <h3>👥 Do‘st taklif qilish</h3>
-  <button onclick="inviteFriend()">🔗 Taklif havolasini olish</button>
+<div class="grid">
+ <button onclick="invite()"><span>👥</span>Do‘st qo‘shish</button>
+ <button onclick="showMessage('Topshiriqlar keyingi bosqichda ulanadi.')"><span>📋</span>Topshiriqlar</button>
+ <button onclick="dailyBonus()"><span>🎁</span>Kunlik bonus</button>
+ <button onclick="showMessage('Mukofot chiqarish tizimi hali ulanmagan.')"><span>💳</span>Chiqarish</button>
 </div>
 
 <script>
+const tg = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
+
+function showMessage(msg){
+ if(tg.showAlert) tg.showAlert(msg);
+ else alert(msg);
+}
+
 let coins = Number(localStorage.getItem("bonusCoins") || 0);
-  const todayKey = new Date().toLocaleDateString("en-CA");
-let dailyTapCount = Number(
-  localStorage.getItem("dailyTap_" + todayKey) || 0
-);
+const todayKey = new Date().toLocaleDateString("en-CA");
+let dailyTapCount = Number(localStorage.getItem("dailyTap_" + todayKey) || 0);
 let upgrades = Number(localStorage.getItem("limitUpgrades") || 0);
 let dailyLimit = 500 + upgrades * 100;
 
-
-function updateCoins() {
-  document.getElementById("coins").textContent = coins;
-  document.getElementById("balance").textContent = coins;
-  localStorage.setItem("bonusCoins", coins);
-
-  document.getElementById("limitDisplay").textContent = dailyLimit;
-  document.getElementById("tapUsed").textContent = dailyTapCount;
+function updateCoins(){
+ document.getElementById("balance").textContent = coins;
+ localStorage.setItem("bonusCoins", coins);
+ document.getElementById("limitDisplay").textContent = dailyLimit;
+ document.getElementById("tapUsed").textContent = dailyTapCount;
+ document.getElementById("progress").style.width =
+  Math.min(100, dailyTapCount / dailyLimit * 100) + "%";
 }
 
-function tapCoin() {
-  if (dailyTapCount >= dailyLimit) {
-    showMessage("Kunlik TAP limiting tugadi!");
-    return;
-  }
-
-  coins += 1;
-  dailyTapCount += 1;
-
-  localStorage.setItem("dailyTap_" + todayKey, dailyTapCount);
-  updateCoins();
+function tapCoin(){
+ if(dailyTapCount >= dailyLimit){
+  showMessage("Kunlik TAP limiting tugadi!");
+  return;
+ }
+ coins++;
+ dailyTapCount++;
+ localStorage.setItem("dailyTap_" + todayKey, dailyTapCount);
+ const coin = document.getElementById("coin");
+ coin.classList.remove("pulse");
+ void coin.offsetWidth;
+ coin.classList.add("pulse");
+ const floating = document.getElementById("floatText");
+ floating.classList.remove("show");
+ void floating.offsetWidth;
+ floating.classList.add("show");
+ updateCoins();
 }
 
-function upgradeLimit() {
-  if (coins < 1000) {
-    showMessage("Limitni oshirish uchun 1000 tanga kerak!");
-    return;
-  }
+document.getElementById("coin").addEventListener("click", tapCoin);
+document.getElementById("coin").addEventListener("keydown", e => {
+ if(e.key === "Enter" || e.key === " "){
+  e.preventDefault();
+  tapCoin();
+ }
+});
 
-  coins -= 1000;
-  upgrades += 1;
-  dailyLimit = 500 + upgrades * 100;
-
-  localStorage.setItem("limitUpgrades", upgrades);
-  updateCoins();
-
-  showMessage("Limit oshdi! Yangi kunlik limit: " + dailyLimit);
+function upgradeLimit(){
+ if(coins < 1000){
+  showMessage("Limitni oshirish uchun 1000 tanga kerak!");
+  return;
+ }
+ coins -= 1000;
+ upgrades++;
+ dailyLimit = 500 + upgrades * 100;
+ localStorage.setItem("limitUpgrades", upgrades);
+ updateCoins();
+ showMessage("Limit oshdi! Yangi kunlik limit: " + dailyLimit);
 }
 
-function dailyBonus() {
-  const today = new Date().toDateString();
-  if (localStorage.getItem("bonusDaily") === today) {
-    alert("Bugungi bonusni olding!");
-    return;
-  }
-  coins += 50;
-  localStorage.setItem("bonusDaily", today);
-  updateCoins();
-  alert("50 ta tanga olding!");
+function dailyBonus(){
+ const today = new Date().toDateString();
+ if(localStorage.getItem("bonusDaily") === today){
+  showMessage("Bugungi bonusni olding!");
+  return;
+ }
+ coins += 50;
+ localStorage.setItem("bonusDaily", today);
+ updateCoins();
+ showMessage("50 ta tanga olding! 🎁");
 }
 
-function doTask() {
-  alert("Vazifani haqiqatan bajarganingdan keyin mukofot berilishi kerak. Hozircha bu demo.");
-}
-
-function inviteFriend() {
-  const link = window.location.href;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(link);
-    alert("Sayt havolasi nusxalandi. Haqiqiy referal hisobi keyin ulanadi.");
-  } else {
-    prompt("Havolang:", link);
-  }
+function invite(){
+ const link = "https://t.me/dilshod_ai_yordamchi_bot?start=ref";
+ const share = "https://t.me/share/url?url=" +
+  encodeURIComponent(link) + "&text=" +
+  encodeURIComponent("Bonus Arena'ga qo‘shil!");
+ if(tg.openTelegramLink) tg.openTelegramLink(share);
+ else if(navigator.clipboard){
+  navigator.clipboard.writeText(link);
+  showMessage("Taklif havolasi nusxalandi.");
+ }else{
+  prompt("Taklif havolasi:", link);
+ }
 }
 
 updateCoins();
-  document.getElementById("limitDisplay").textContent = dailyLimit;
-document.getElementById("tapUsed").textContent = dailyTapCount;
 </script>
 </body>
 </html>

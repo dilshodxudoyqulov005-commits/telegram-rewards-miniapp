@@ -119,8 +119,16 @@ function updateCoins() {
 }
 
 function tapCoin() {
-  coins += 1;
-  updateCoins();
+const count = doneCount();
+const limit = count >= 3 ? 600 : 500;
+
+if (coins >= limit) {
+alert("TAP limitingiz tugadi!");
+return;
+}
+
+coins += 1;
+updateCoins();
 }
 
 function dailyBonus() {

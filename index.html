@@ -101,6 +101,7 @@
   <h1>🪙 <span id="coins">0</span></h1>
 
   <button onclick="tapCoin()">👆 TAP QILISH</button>
+  <button onclick="upgradeLimit()">🚀 Limitni oshirish (1000 🪙)</button>
   <button onclick="dailyBonus()">🎁 Kunlik bonus</button>
 
   <h3>🎯 Vazifalar</h3>
@@ -112,23 +113,46 @@
 
 <script>
 let coins = Number(localStorage.getItem("bonusCoins") || 0);
+  const todayKey = new Date().toLocaleDateString("en-CA");
+let dailyTapCount = Number(
+  localStorage.getItem("dailyTap_" + todayKey) || 0
+);
+let upgrades = Number(localStorage.getItem("limitUpgrades") || 0);
+let dailyLimit = 500 + upgrades * 100;
 
 function updateCoins() {
   document.getElementById("coins").textContent = coins;
   localStorage.setItem("bonusCoins", coins);
 }
 
-function tapCoin() {
-const count = doneCount();
-const limit = count >= 3 ? 600 : 500;
 
-if (coins >= limit) {
-alert("TAP limitingiz tugadi!");
-return;
+function tapCoin() {
+  if (dailyTapCount >= dailyLimit) {
+    showMessage("Kunlik TAP limiting tugadi!");
+    return;
+  }
+
+  coins += 1;
+  dailyTapCount += 1;
+
+  localStorage.setItem("dailyTap_" + todayKey, dailyTapCount);
+  updateCoins();
 }
 
-coins += 1;
-updateCoins();
+function upgradeLimit() {
+  if (coins < 1000) {
+    showMessage("Limitni oshirish uchun 1000 tanga kerak!");
+    return;
+  }
+
+  coins -= 1000;
+  upgrades += 1;
+  dailyLimit = 500 + upgrades * 100;
+
+  localStorage.setItem("limitUpgrades", upgrades);
+  updateCoins();
+
+  showMessage("Limit oshdi! Yangi kunlik limit: " + dailyLimit);
 }
 
 function dailyBonus() {

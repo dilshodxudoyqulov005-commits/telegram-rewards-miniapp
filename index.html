@@ -151,5 +151,73 @@ function inviteFriend() {
 
 updateCoins();
 </script>
+  
+<div id="extraTasks" style="background:#20234b;color:white;padding:18px;border-radius:18px;margin:20px auto;max-width:440px;font-family:Arial">
+  <h2>🎯 Vazifalar</h2>
+  <p>Uchala vazifani bajarsang, kunlik TAP limiting +100 oshadi!</p>
+
+  <button id="taskChannel" style="display:block;width:100%;padding:13px;margin:8px 0;border-radius:12px">
+    📢 Kanalga obuna
+  </button>
+  <button id="taskDaily" style="display:block;width:100%;padding:13px;margin:8px 0;border-radius:12px">
+    🎁 Kunlik vazifa
+  </button>
+  <button id="taskFriend" style="display:block;width:100%;padding:13px;margin:8px 0;border-radius:12px">
+    👥 Do‘st taklif qilish
+  </button>
+
+  <p id="taskStatus">Bajarildi: 0/3</p>
+  <p id="taskLimit">Kunlik TAP limiti: 500</p>
+</div>
+
+<script>
+(function () {
+  const today = new Date().toISOString().slice(0, 10);
+  const prefix = "arenaTasks_" + today + "_";
+  const names = ["channel", "daily", "friend"];
+
+  function doneCount() {
+    return names.filter(n => localStorage.getItem(prefix + n) === "1").length;
+  }
+
+  function renderTasks() {
+    names.forEach(n => {
+      const btn = document.getElementById(
+        n === "channel" ? "taskChannel" :
+        n === "daily" ? "taskDaily" : "taskFriend"
+      );
+      const done = localStorage.getItem(prefix + n) === "1";
+      btn.textContent = (done ? "✅ " : "") + ({
+        channel: "📢 Kanalga obuna",
+        daily: "🎁 Kunlik vazifa",
+        friend: "👥 Do‘st taklif qilish"
+      }[n]);
+      btn.disabled = done;
+    });
+
+    const count = doneCount();
+    document.getElementById("taskStatus").textContent =
+      "Bajarildi: " + count + "/3";
+    document.getElementById("taskLimit").textContent =
+      "Kunlik TAP limiti: " + (count === 3 ? 600 : 500);
+  }
+
+  function completeTask(n, message) {
+    if (localStorage.getItem(prefix + n) === "1") return;
+    if (!confirm(message)) return;
+    localStorage.setItem(prefix + n, "1");
+    renderTasks();
+  }
+
+  document.getElementById("taskChannel").onclick = () =>
+    completeTask("channel", "Kanalga haqiqatan obuna bo‘ldingmi?");
+  document.getElementById("taskDaily").onclick = () =>
+    completeTask("daily", "Kunlik vazifani bajardingmi?");
+  document.getElementById("taskFriend").onclick = () =>
+    completeTask("friend", "Do‘stingni taklif qildingmi?");
+
+  renderTasks();
+})();
+</script>
 </body>
 </html>
